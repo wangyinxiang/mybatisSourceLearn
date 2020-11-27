@@ -227,6 +227,7 @@ public class XPathParser {
     }
   }
 
+  // 通过 DOM 解析 XML 文件的过程中的几个步骤
   private Document createDocument(InputSource inputSource) {
     // important: this must only be called AFTER common constructor
     try {

@@ -606,7 +606,7 @@ public class Configuration {
     getLanguageRegistry().setDefaultDriverClass(driver);
   }
 
-  public LanguageDriver getDefaultScriptingLanguageInstance() {
+  public LanguageDriver  getDefaultScriptingLanguageInstance() {
     return languageRegistry.getDefaultDriver();
   }
 
@@ -1014,10 +1014,13 @@ public class Configuration {
             + (conflictMessageProducer == null ? "" : conflictMessageProducer.apply(super.get(key), value)));
       }
       if (key.contains(".")) {
+        // 将key以 . 分割，并获取最后一项作为shortKey
+        // shortKey， 其实就是我们以全限定名作为属性时， 它取得是分隔符分割后最后的一项
         final String shortKey = getShortName(key);
         if (super.get(shortKey) == null) {
           super.put(shortKey, value);
         } else {
+          // Ambiguity --key 是否二义性的
           super.put(shortKey, (V) new Ambiguity(shortKey));
         }
       }

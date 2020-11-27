@@ -30,6 +30,9 @@ public final class LogFactory {
 
   private static Constructor<? extends Log> logConstructor;
 
+  // 尝试加载每种日志框架，调用顺序是：
+  // useSlf4jLogging --> useCommonsLogging --> useLog4J2Logging -->
+  // useLog4JLogging --> useJdkLogging --> useNoLogging
   static {
     tryImplementation(LogFactory::useSlf4jLogging);
     tryImplementation(LogFactory::useCommonsLogging);
@@ -99,8 +102,11 @@ public final class LogFactory {
 
   private static void setImplementation(Class<? extends Log> implClass) {
     try {
+      // /获取指定适配器的构造方法
       Constructor<? extends Log> candidate = implClass.getConstructor(String.class);
+      //  实例化适配器
       Log log = candidate.newInstance(LogFactory.class.getName());
+      // 输出日志
       if (log.isDebugEnabled()) {
         log.debug("Logging initialized using '" + implClass + "' adapter.");
       }

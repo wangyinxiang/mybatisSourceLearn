@@ -72,6 +72,16 @@ public class SqlSessionFactoryBuilder {
     return build(inputStream, null, properties);
   }
 
+  /**
+   * 1. 创建XMLConfigBuilder对象;
+   * 2. 使用XMLConfigBuilder对象的方法parse()来获得Confiuration对象;
+   * 3. 通过build(configuration)， 使用Confiuration对象创建相应的SqlSessionFactory对象。
+   *
+   * @param inputStream
+   * @param environment
+   * @param properties
+   * @return
+   */
   public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
     try {
       XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);

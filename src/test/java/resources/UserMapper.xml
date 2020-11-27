@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wyx.learn.mapper.UserMapper" >
+
+  <resultMap id="BaseResultMap" type="com.wyx.learn.entity.User" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="deptment" property="deptment" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="createDate" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="BaseResultUserMap" type="com.wyx.learn.entity.User" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="deptment" property="deptment" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="createDate" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <collection property="salaryList" javaType="java.util.ArrayList"
+                ofType="com.wyx.learn.entity.UserSalary"
+                column="id">
+      <result column="year" property="year" />
+      <result column="month" property="month" />
+      <result column="salary" property="salary" />
+    </collection>
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, user_name, password, deptment, phone, email, status, create_date, remark
+  </sql>
+
+  <select id="getUser" resultType="com.wyx.learn.entity.User" >
+      select
+        id, user_name as userName, password,
+        deptment, phone, email, status,
+        create_date as createDate, remark
+      from
+        t_user
+      where
+        id = #{id}
+  </select>
+
+  <select id="selectUserList" resultMap="BaseResultMap" >
+      select
+        <include refid="Base_Column_List" />
+      from t_user
+  </select>
+
+  <select id="selectBetweenCreatedTime" parameterType="java.util.Map" resultMap="BaseResultMap">
+      select
+        <include refid="Base_Column_List" />
+      from t_user
+      where
+        create_date &gt; #{startTime, jdbcType=TIMESTAMP}
+        and create_date &lt; #{endTime, jdbcType=TIMESTAMP}
+  </select>
+
+  <select id="selectBetweenCreatedTimeAnno" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_user
+    where
+    create_date &gt; #{startTime, jdbcType=TIMESTAMP}
+    and create_date &lt; #{endTime, jdbcType=TIMESTAMP}
+  </select>
+
+  <select id="getUserSalary" resultMap="BaseResultUserMap">
+    SELECT
+      u.id,
+      u.user_name,
+      u.`password`,
+      u.deptment,
+      u.phone,
+      u.email,
+      u.`status`,
+      u.create_date,
+      u.remark,
+      us.`month`,
+      us.`year`,
+      us.salary
+    FROM
+      t_user u
+    LEFT JOIN t_user_salary us ON u.id = us.user_id
+    WHERE
+      u.id = #{id}
+  </select>
+
+  <insert id="save" parameterType="com.wyx.learn.entity.User" >
+    insert into
+        t_user(user_name, password, deptment, phone, email, status, createDate, remark)
+    values(
+        #{userName,jdbcType=VARCHAR},
+        #{password,jdbcType=VARCHAR},
+        #{deptment},
+        #{phone},
+        #{email},
+        #{status},
+        #{createDate},
+        #{remark}
+    )
+  </insert>
+
+</mapper>

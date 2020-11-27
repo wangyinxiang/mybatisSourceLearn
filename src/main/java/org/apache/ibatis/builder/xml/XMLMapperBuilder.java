@@ -91,14 +91,21 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   public void parse() {
+    // 判断是否已经加载过
     if (!configuration.isResourceLoaded(resource)) {
+      // 解析 <mapper> 节点
       configurationElement(parser.evalNode("/mapper"));
+      // 标记一下，已经加载过了
       configuration.addLoadedResource(resource);
+      // 绑定映射器到namespace
       bindMapperForNamespace();
     }
 
+    // 处理 configurationElement 中解析失败的<resultMap>
     parsePendingResultMaps();
+    // 处理configurationElement 中解析失败的<cache-ref>
     parsePendingCacheRefs();
+    // 处理 configurationElement 中解析失败的 SQL 语句
     parsePendingStatements();
   }
 
@@ -106,8 +113,10 @@ public class XMLMapperBuilder extends BaseBuilder {
     return sqlFragments.get(refid);
   }
 
+  // 解析mapper文件
   private void configurationElement(XNode context) {
     try {
+      // namespace不能为空
       String namespace = context.getStringAttribute("namespace");
       if (namespace == null || namespace.isEmpty()) {
         throw new BuilderException("Mapper's namespace cannot be empty");
@@ -117,7 +126,9 @@ public class XMLMapperBuilder extends BaseBuilder {
       cacheElement(context.evalNode("cache"));
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
       resultMapElements(context.evalNodes("/mapper/resultMap"));
+      // <sql> 标签
       sqlElement(context.evalNodes("/mapper/sql"));
+      // curd标签
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);
@@ -210,6 +221,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       boolean readWrite = !context.getBooleanAttribute("readOnly", false);
       boolean blocking = context.getBooleanAttribute("blocking", false);
       Properties props = context.getChildrenAsProperties();
+      // 将解析出来的内容进行缓存设置
       builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);
     }
   }

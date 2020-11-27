@@ -89,9 +89,12 @@ public class CacheBuilder {
     return this;
   }
 
+  // 该函数创建对应的 Cache 对象， 该对象的 id 为 currentNamespace(当前mapper.xml 的namespace)
   public Cache build() {
     setDefaultImplementations();
+    // 通过反射创建Cache对象
     Cache cache = newBaseCacheInstance(implementation, id);
+    // 根据<cache>节点的子节点<property>, 初始化Cache对象
     setCacheProperties(cache);
     // issue #352, do not apply decorators to custom caches
     if (PerpetualCache.class.equals(cache.getClass())) {
@@ -99,6 +102,7 @@ public class CacheBuilder {
         cache = newCacheDecoratorInstance(decorator, cache);
         setCacheProperties(cache);
       }
+      // mybatis 自己提供的标准装饰器
       cache = setStandardDecorators(cache);
     } else if (!LoggingCache.class.isAssignableFrom(cache.getClass())) {
       cache = new LoggingCache(cache);

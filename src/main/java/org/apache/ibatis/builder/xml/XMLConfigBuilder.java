@@ -96,10 +96,12 @@ public class XMLConfigBuilder extends BaseBuilder {
       throw new BuilderException("Each XMLConfigBuilder can only be used once.");
     }
     parsed = true;
+    // 解析MyBatis-config.xml，获取Configuration对象
     parseConfiguration(parser.evalNode("/configuration"));
     return configuration;
   }
 
+  // 解析的核心, 获得Configuration对象
   private void parseConfiguration(XNode root) {
     try {
       // issue #117 read properties first
@@ -372,7 +374,9 @@ public class XMLConfigBuilder extends BaseBuilder {
           String mapperClass = child.getStringAttribute("class");
           if (resource != null && url == null && mapperClass == null) {
             ErrorContext.instance().resource(resource);
+            // 根据配置的mapper地址，获取文件输入流
             InputStream inputStream = Resources.getResourceAsStream(resource);
+            // 获取XMLMapperBuilder对象
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
             mapperParser.parse();
           } else if (resource == null && url != null && mapperClass == null) {
